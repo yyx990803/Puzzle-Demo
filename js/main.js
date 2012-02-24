@@ -1,18 +1,18 @@
-var PUZZLE = (function () {
-	
+var PUZZLE = (function ($) {
+
 	//Variables
-	
+
 	var moving         = false,
 		tileSize       = 72,
 		animationSpeed = {
-			default: 150,
+			fast: 150,
 			slow: 350
 		},
 		templates      = {
 			wrapper: function () {
 				return '<div id="wrapper">'
-				+ '<a id="shuffle">Shuffle</a>'
-				+ '</div>';
+					+ '<a id="shuffle">Shuffle</a>'
+					+ '</div>';
 			},
 			board: function () {
 				return '<div id="board"></div>';
@@ -21,16 +21,16 @@ var PUZZLE = (function () {
 				var offsetTop  = Math.floor(id / 4) * tileSize * -1,
 					offsetLeft = id % 4 * tileSize * -1;
 				return '<div class="tile">'
-				+ '<img src="img/globe.jpg" style="top:' + offsetTop + 'px; left:' + offsetLeft + 'px">'
-				+ '</div>';
+					+ '<img src="img/globe.jpg" style="top:' + offsetTop + 'px; left:' + offsetLeft + 'px">'
+					+ '</div>';
 			},
 			shuffleButton: function () {
 				return '<a id="shuffle">Shuffle</a>';
 			}
 		};
-	
+
 	//The tile object
-	
+
 	var Tile = function (id, board) {
 		this.id = id;
 		this.board = board;
@@ -45,17 +45,17 @@ var PUZZLE = (function () {
 			var el         = this.el,
 				offsetTop  = Math.floor(position / 4) * tileSize,
 				offsetLeft = (position % 4) * tileSize,
-				translate  = 'translate(' + offsetLeft + 'px, ' + offsetTop + 'px)';	
+				translate  = 'translate(' + offsetLeft + 'px, ' + offsetTop + 'px)';
 			el.data('position', position)
-			.addClass('slow')
-			.css({
-				'-webkit-transform': translate,
-				'-moz-transform': translate,
-				'-ms-transform': translate,
-				'-o-transform': translate,
-				'transform': translate
-			});
-			setTimeout(function(){
+				.addClass('slow')
+				.css({
+					'-webkit-transform': translate,
+					'-moz-transform': translate,
+					'-ms-transform': translate,
+					'-o-transform': translate,
+					'transform': translate
+				});
+			setTimeout(function () {
 				el.removeClass('slow');
 			}, animationSpeed.slow);
 		},
@@ -63,9 +63,9 @@ var PUZZLE = (function () {
 			return Math.floor(this.position / 4) === Math.floor(this.board.openSlot / 4) || (this.position % 4) === (this.board.openSlot % 4);
 		}
 	};
-	
+
 	//The board object
-	
+
 	var Board = function () {
 		this.buildTiles();
 		this.shuffle();
@@ -75,47 +75,59 @@ var PUZZLE = (function () {
 	Board.prototype = {
 		tiles: [],
 		buildTiles: function () {
-			for (var i = 0; i < 15; i++) {
+			var i;
+			for (i = 0; i < 15; i += 1) {
 				this.tiles.push(new Tile(i, this));
 			}
 			this.tiles.push(null);
 			this.openSlot = 15;
 		},
 		shuffle: function () {
-			for (var i = this.tiles.length - 1; i > 0; i--) {
-				var j = Math.floor(Math.random() * (i + 1)),
-					temp = this.tiles[i];
+			var i, j, temp;
+			for (i = this.tiles.length - 1; i > 0; i -= 1) {
+				j = Math.floor(Math.random() * (i + 1));
+				temp = this.tiles[i];
 				this.tiles[i] = this.tiles[j];
 				this.tiles[j] = temp;
 			}
 		},
 		render: function () {
 			this.el = $(templates.board());
-			for (var i = 0, j = this.tiles.length; i < j; i++) {
+			var i, j;
+			for (i = 0, j = this.tiles.length; i < j; i += 1) {
 				if (this.tiles[i]) {
 					this.el.append(this.tiles[i].el);
 				}
 			}
-			
-			//Event Handling
-			
-			var board = this;
-			board.el.delegate('.tile', 'touchstart click', function (e) {
-				var tile = board.tiles[$(this).data('position')];
-				if (tile.isMovable()) {
-					console.log("!");
-				}
-			})
-			.delegate('.tile', 'touchmove', function (e) {
-				
-			})
-			.delegate('.tile', 'touchend', function (e) {
-				
-			});
+			this.initEvents();
+		},
+		initEvents: function () {
+			var board = this,
+				touch = {};
+			board.el
+				.delegate('.tile', 'touchstart', function (e) {
+					if (!moving && e.touches.length === 1) {
+						var tile = board.tiles[$(this).data('position')];
+						if (tile.isMovable()) {
+							touch.x1 = e.touches[0].pageX;
+							touch.x2 = e.touches[0].pageY;
+						}
+					}
+				})
+				.delegate('.tile', 'touchmove', function (e) {
+					if (e.touches.length === 1) {
+						var dx = e.touches[0].pageX - touch.x1,
+							dy = e.touches[0].pageY - touch.y1;
+					}
+				})
+				.delegate('.tile', 'touchend', function (e) {
+					touch = {};
+				});
 		},
 		update: function () {
 			this.lock(animationSpeed.slow);
-			for (var i = 0, j = this.tiles.length; i < j; i++) {
+			var i, j;
+			for (i = 0, j = this.tiles.length; i < j; i += 1) {
 				if (this.tiles[i]) {
 					this.tiles[i].update(i);
 				} else {
@@ -124,8 +136,9 @@ var PUZZLE = (function () {
 			}
 		},
 		checkGameState: function () {
-			for (var i = 0, j = this.tiles.length; i < j; i++) {
-				if (this.tiles[i] && this.tiles[i].id != i) {
+			var i, j;
+			for (i = 0, j = this.tiles.length; i < j; i += 1) {
+				if (this.tiles[i] && this.tiles[i].id !== i) {
 					return false;
 				}
 			}
@@ -138,35 +151,34 @@ var PUZZLE = (function () {
 			}, duration);
 		}
 	};
-	
+
 	//Expose initialization function
-	
+
 	return {
 		init: function (container) {
-			
+
 			//prevent mobile browser viewport movement
-			
-			$(document).bind('touchmove', function (e) {
-				//e.preventDefault();
+
+			$(document.body).bind('touchmove', function (e) {
+				e.preventDefault();
 			});
-			
+
 			//create puzzle
-			
+
 			var board = new Board(),
-				shuffleButton = $(templates.shuffleButton())
-				.bind('click', function () {
+				shuffleButton = $(templates.shuffleButton()).bind('click', function () {
 					if (!moving) {
 						board.shuffle();
 						board.update();
 					}
 				});
-				
+
 			$(container).append(board.el).append(shuffleButton);
 		}
 	};
-	
-}());
 
-$(document).ready(function(){
+}(Zepto));
+
+$(document).ready(function () {
 	PUZZLE.init(document.body);
 });
