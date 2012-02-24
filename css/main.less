@@ -1,0 +1,87 @@
+//Variables
+
+@tileSize: 70px;
+@tileBorder: 1px;
+@boardSize: (@tileSize + @tileBorder * 2) * 4;
+@boardPadding: 2px;
+
+//Mixins
+
+.transition(@args) {
+	-webkit-transition: -webkit-transform @args;
+	-moz-transition: -moz-transform @args;
+	-ms-transition: -ms-transform @args;
+	-o-transition: -o-transform @args;
+	transition: transform @args;
+}
+
+.gradient(@begin, @end) {
+	background: -webkit-linear-gradient(top, @begin 0%, @end 100%);
+	background: -moz-linear-gradient(top, @begin 0%, @end 100%);
+	background: -ms-linear-gradient(top, @begin 0%, @end 100%);
+	background: -o-linear-gradient(top, @begin 0%, @end 100%);
+	background: linear-gradient(top, @begin 0%, @end 100%);
+}
+
+//Main
+
+html, body {
+	margin: 0;
+	padding: 0;
+	background-color: #ddd;
+}
+
+#board {
+	width: @boardSize;
+	height: @boardSize;
+	margin: 9px auto;
+	background-color: #ccc;
+	box-shadow: inset 0 1px 8px rgba(0, 0, 0, .2), 0 1px 1px rgba(255, 255, 255, .5);
+	border-radius: 2px;
+	padding: @boardPadding;
+}
+
+.tile {
+	display: block;
+	width: @tileSize;
+	height: @tileSize;
+	position: absolute;
+	overflow: hidden;
+	border: @tileBorder solid #eee;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, .3);
+	.transition(.15s ease-in-out);
+	img {
+		width: @boardSize;
+		height: @boardSize;
+		position: relative;
+	}
+	&.slow {
+		.transition(.35s ease-in-out ~"!important");
+	}
+	&.drag {
+		.transition(0 cubic-bezier(0,0,0.2,1) ~"!important");
+	}
+}
+
+#shuffle {
+	display: block;
+	color: #666;
+	cursor: pointer;
+	font-family: Helvetica, Arial, sans-serif;
+	font-weight: bold;
+	text-align: center;
+	text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+	width: @boardSize + @boardPadding * 2;
+	margin: 9px auto;
+	padding: 7px 0;
+	border: 1px solid #aaa;
+	border-top-color: #b9b9b9;
+	border-radius: 2px;
+	box-shadow: inset 0 1px 2px rgba(0, 0, 0, .15), 0 1px 1px rgba(255, 255, 255, .5);
+	.gradient(#f3f3f3, #d9d9d9);
+	-webkit-user-select: none;
+	-webkit-tap-highlight-color: transparent;
+	&:active {
+		.gradient(#ddd, #ccc);
+	}
+}
