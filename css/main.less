@@ -8,11 +8,11 @@
 //Mixins
 
 .transition(@args) {
-	-webkit-transition: -webkit-transform @args;
-	-moz-transition: -moz-transform @args;
-	-ms-transition: -ms-transform @args;
-	-o-transition: -o-transform @args;
-	transition: transform @args;
+	-webkit-transition: all @args;
+	-moz-transition: all @args;
+	-ms-transition: all @args;
+	-o-transition: all @args;
+	transition: all @args;
 }
 
 .gradient(@begin, @end) {
@@ -50,7 +50,8 @@ html, body {
 	overflow: hidden;
 	border: @tileBorder solid #eee;
 	box-shadow: 0 1px 4px rgba(0, 0, 0, .3);
-	.transition(.15s ease-in-out);
+	.transition(.1s ease);
+	-webkit-backface-visibility: hidden;
 	img {
 		width: @boardSize;
 		height: @boardSize;
@@ -72,7 +73,7 @@ html, body {
 	font-weight: bold;
 	text-align: center;
 	text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
-	width: @boardSize + @boardPadding * 2;
+	width: @boardSize + 2px;
 	margin: 9px auto;
 	padding: 7px 0;
 	border: 1px solid #aaa;
