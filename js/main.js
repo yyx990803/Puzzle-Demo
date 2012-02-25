@@ -2,12 +2,7 @@ var PUZZLE = (function ($, undefined) {
 
 	var animating = false,
 		tileSize = 72,
-		
-		// CSS transition speed
-		animationSpeed = {
-			fast: 100,
-			slow: 350
-		},
+		animationSpeed = 150,
 		
 		// Templates
 		templates = {
@@ -226,25 +221,31 @@ var PUZZLE = (function ($, undefined) {
 				})
 				.delegate('.tile', 'touchend', function (e) {
 					var i, j;
-					for (i = 0, j = touch.group.length; i < j; i++) {
-						touch.group[i].el.removeClass('drag');
-					}
 					if (touch.legit) {
 						if (touch.dragging && Math.abs(touch.dp) < Math.abs(touch.triggerPoint)) {
 							// Dragged but cancelled
 							for (i = 0, j = touch.group.length; i < j; i++) {
-								touch.group[i].el.css(cssTransform(touch.group[i].x, touch.group[i].y));
+								touch.group[i].el
+									.removeClass('drag')
+									.css(cssTransform(touch.group[i].x, touch.group[i].y));
 							}
-							board.lock(animationSpeed.fast);
+							board.lock(animationSpeed);
 						} else {
 							// Triggered a successful move
+							
 							// move the tile objects to new positions in array
-							i = touch.group.length - 1;
-							board.tiles[board.openSlot.id] = touch.group[i];
-							while (i > 0) {
-								board.tiles[touch.group[i].id] = touch.group[i--];
+							board.tiles[board.openSlot.position] = touch.group[touch.group.length - 1];
+							for (i = touch.group.length - 1; i > 0; i--) {
+								board.tiles[touch.group[i].position] = touch.group[i-1];
 							}
-							board.tiles[touch.group[0].id] = null;
+							board.tiles[touch.group[0].position] = null;
+							
+							//Update view
+							if (touch.dragging) {
+								for (i = 0, j = touch.group.length; i < j; i++) {
+									touch.group[i].el.removeClass('drag');
+								}
+							}
 							board.update();
 						}
 					}
@@ -255,7 +256,7 @@ var PUZZLE = (function ($, undefined) {
 		
 		// Update tiles/slots according to current positions
 		update: function () {
-			this.lock(animationSpeed.slow);
+			this.lock();
 			for (var i = 0, j = this.tiles.length; i < j; i++) {
 				if (this.tiles[i]) {
 					this.tiles[i].update(i);
@@ -268,14 +269,14 @@ var PUZZLE = (function ($, undefined) {
 		// Utility function for setting the empty slot
 		setOpenSlot: function (i) {
 			this.openSlot = {
-				id: i,
+				position: i,
 			 	row: Math.floor(i / 4),
 				col: i % 4
 			};
 		},
 		
 		// Check if all tiles are in correct position
-		checkGameState: function () {
+		gameComplete: function () {
 			for (var i = 0, j = this.tiles.length; i < j; i++) {
 				if (this.tiles[i] && this.tiles[i].id !== i) {
 					return false;
@@ -286,11 +287,17 @@ var PUZZLE = (function ($, undefined) {
 		
 		// Prevent all touch events for a given duration
 		// Used during animation
-		lock: function (duration) {
+		lock: function () {
+			var board = this;
 			animating = true;
 			setTimeout(function () {
 				animating = false;
-			}, duration);
+				if (board.gameComplete()) {
+					alert('Wow you are damn good at slider puzzles... gonna shuffle that so that you can play some more!');
+					board.shuffle();
+					board.update();
+				}
+			}, animationSpeed);
 		}
 	};
 
