@@ -16,11 +16,6 @@ var PUZZLE = (function ($, window, undefined) {
 		
 		// Templates
 		templates = {
-			wrapper: function () {
-				return '<div id="wrapper">' +
-					'<a id="shuffle">Shuffle</a>' +
-					'</div>';
-			},
 			board: function () {
 				return '<div id="board"></div>';
 			},
