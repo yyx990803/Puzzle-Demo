@@ -198,8 +198,8 @@ var PUZZLE = (function ($, window, undefined) {
 					}
 				})
 				.delegate('.tile', 'touchmove mousemove', function (e) {
+					var i, j, dx, dy;
 					if ((!e.touches || e.touches.length === 1) && touch.legit) {
-						var i, j, dx, dy;
 						if (!touch.dragging) {
 							touch.dragging = true;
 							for (i = 0, j = touch.group.length; i < j; i++) {
