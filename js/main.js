@@ -1,6 +1,10 @@
+//
 //  Slider Puzzle for mobile browser (webkit optimized)
 //  Evan You
 //  02-24-2012
+//  
+//  Built with Zepto.js
+//
 
 var PUZZLE = (function ($, undefined) {
 
