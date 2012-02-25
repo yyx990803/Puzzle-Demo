@@ -1,3 +1,7 @@
+//  Slider Puzzle for mobile browser (webkit optimized)
+//  Evan You
+//  02-24-2012
+
 var PUZZLE = (function ($, undefined) {
 
 	var animating      = false,
@@ -209,7 +213,7 @@ var PUZZLE = (function ($, undefined) {
 						// Drag animation
 						for (i = 0, j = touch.group.length; i < j; i++) {
 							dx = touch.group[i].x + (touch.axis ? 0 : touch.dp);
-							dy = touch.group[i].y+ (touch.axis ? touch.dp : 0);
+							dy = touch.group[i].y + (touch.axis ? touch.dp : 0);
 							touch.group[i].el.css(cssTransform(dx, dy));
 						}
 					}
@@ -219,6 +223,7 @@ var PUZZLE = (function ($, undefined) {
 					if (touch.legit) {
 						if (touch.dragging && Math.abs(touch.dp) < Math.abs(touch.triggerPoint)) {
 							// Dragged but cancelled
+							// return all tiles to original position
 							for (i = 0, j = touch.group.length; i < j; i++) {
 								touch.group[i].el
 									.removeClass('drag')
@@ -227,15 +232,12 @@ var PUZZLE = (function ($, undefined) {
 							board.lock(animationSpeed);
 						} else {
 							// Triggered a successful move
-							
 							// move the tile objects to new positions in array
 							board.tiles[board.openSlot.position] = touch.group[touch.group.length - 1];
-							for (i = touch.group.length - 1; i > 0; i--) {
-								board.tiles[touch.group[i].position] = touch.group[i-1];
+							for (i = touch.group.length - 1; i >= 0; i--) {
+								board.tiles[touch.group[i].position] = (i == 0 ? null : touch.group[i-1]);
 							}
-							board.tiles[touch.group[0].position] = null;
-							
-							//Update view
+							// Animatie
 							if (touch.dragging) {
 								for (i = 0, j = touch.group.length; i < j; i++) {
 									touch.group[i].el.removeClass('drag');
@@ -258,6 +260,14 @@ var PUZZLE = (function ($, undefined) {
 				} else {
 					this.setOpenSlot(i);
 				}
+			}
+			if (this.gameComplete()) {
+				var board = this;
+				setTimeout( function () {
+					alert('Wow you are damn good at slider puzzles... gonna shuffle that so that you can play some more!');
+					board.shuffle();
+					board.update();
+				}, animationSpeed);
 			}
 		},
 		
@@ -283,15 +293,9 @@ var PUZZLE = (function ($, undefined) {
 		// Prevent all touch events for a given duration
 		// Used during animation
 		lock: function () {
-			var board = this;
 			animating = true;
 			setTimeout(function () {
 				animating = false;
-				if (board.gameComplete()) {
-					alert('Wow you are damn good at slider puzzles... gonna shuffle that so that you can play some more!');
-					board.shuffle();
-					board.update();
-				}
 			}, animationSpeed);
 		}
 	};
@@ -320,7 +324,3 @@ var PUZZLE = (function ($, undefined) {
 	};
 
 }(Zepto));
-
-$(document).ready(function () {
-	PUZZLE.init(document.body);
-});
