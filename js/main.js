@@ -6,18 +6,20 @@
 //  Built with Zepto.js
 //
 
-var PUZZLE = (function ($, undefined) {
+var PUZZLE = (function ($, window, undefined) {
+	"use strict";
 
 	var animating      = false,
 		tileSize       = 72,
 		animationSpeed = 150,
+		setTimeout     = window.setTimeout,
 		
 		// Templates
 		templates = {
 			wrapper: function () {
-				return '<div id="wrapper">'
-					+ '<a id="shuffle">Shuffle</a>'
-					+ '</div>';
+				return '<div id="wrapper">' +
+					'<a id="shuffle">Shuffle</a>' +
+					'</div>';
 			},
 			board: function () {
 				return '<div id="board"></div>';
@@ -25,9 +27,9 @@ var PUZZLE = (function ($, undefined) {
 			tile: function (id) {
 				var offsetTop  = Math.floor(id / 4) * -tileSize,
 					offsetLeft = id % 4 * -tileSize;
-				return '<div class="tile">'
-					+ '<img src="img/globe.jpg" style="top:' + offsetTop + 'px; left:' + offsetLeft + 'px">'
-					+ '</div>';
+				return '<div class="tile">' +
+					'<img src="img/globe.jpg" style="top:' + offsetTop + 'px; left:' + offsetLeft + 'px">' +
+					'</div>';
 			},
 			shuffleButton: function () {
 				return '<a id="shuffle">Shuffle</a>';
@@ -239,7 +241,7 @@ var PUZZLE = (function ($, undefined) {
 							// move the tile objects to new positions in array
 							board.tiles[board.openSlot.position] = touch.group[touch.group.length - 1];
 							for (i = touch.group.length - 1; i >= 0; i--) {
-								board.tiles[touch.group[i].position] = (i == 0 ? null : touch.group[i-1]);
+								board.tiles[touch.group[i].position] = (i === 0 ? null : touch.group[i-1]);
 							}
 							// Animatie
 							if (touch.dragging) {
@@ -268,7 +270,7 @@ var PUZZLE = (function ($, undefined) {
 			if (this.gameComplete()) {
 				var board = this;
 				setTimeout( function () {
-					alert('Wow you are damn good at slider puzzles... gonna shuffle that so that you can play some more!');
+					window.alert('Wow you are damn good at slider puzzles... gonna shuffle that so that you can play some more!');
 					board.shuffle();
 					board.update();
 				}, animationSpeed);
@@ -279,7 +281,7 @@ var PUZZLE = (function ($, undefined) {
 		setOpenSlot: function (i) {
 			this.openSlot = {
 				position: i,
-			 	row: Math.floor(i / 4),
+				row: Math.floor(i / 4),
 				col: i % 4
 			};
 		},
@@ -327,4 +329,4 @@ var PUZZLE = (function ($, undefined) {
 		}
 	};
 
-}(Zepto));
+}(Zepto, window));
