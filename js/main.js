@@ -1,7 +1,7 @@
 var PUZZLE = (function ($, undefined) {
 
-	var animating = false,
-		tileSize = 72,
+	var animating      = false,
+		tileSize       = 72,
 		animationSpeed = 150,
 		
 		// Templates
@@ -15,8 +15,8 @@ var PUZZLE = (function ($, undefined) {
 				return '<div id="board"></div>';
 			},
 			tile: function (id) {
-				var offsetTop  = Math.floor(id / 4) * tileSize * -1,
-					offsetLeft = id % 4 * tileSize * -1;
+				var offsetTop  = Math.floor(id / 4) * -tileSize,
+					offsetLeft = id % 4 * -tileSize;
 				return '<div class="tile">'
 					+ '<img src="img/globe.jpg" style="top:' + offsetTop + 'px; left:' + offsetLeft + 'px">'
 					+ '</div>';
@@ -182,18 +182,13 @@ var PUZZLE = (function ($, undefined) {
 							}
 							touch.triggerPoint = (touch.upperBound + touch.lowerBound) / 2;
 							
-							// Recursively look for other affected tiles
-							touch.group = [touch.tile];
-							var lookForAffectedTile = function (tile) {
-								var neighbor = tile.getNeighbor(touch.direction);
-								if (neighbor !== null && neighbor !== undefined) {
-									//Found a neighbor
-									touch.group.push(neighbor);
-									lookForAffectedTile(neighbor);
-								}
+							// Look for other affected tiles
+							touch.group = [];
+							var t = touch.tile;
+							while (t !== null && t !== undefined) {
+								touch.group.push(t);
+								t = t.getNeighbor(touch.direction);
 							}
-							lookForAffectedTile(touch.tile);
-							
 						}
 					}
 				})
