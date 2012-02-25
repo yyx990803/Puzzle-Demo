@@ -28,7 +28,7 @@ var PUZZLE = (function ($, window, undefined) {
 				var offsetTop  = Math.floor(id / 4) * -tileSize,
 					offsetLeft = id % 4 * -tileSize;
 				return '<div class="tile">' +
-					'<img src="img/globe.jpg" style="top:' + offsetTop + 'px; left:' + offsetLeft + 'px">' +
+					'<img src="img/globe.jpg" draggable="false" style="top:' + offsetTop + 'px; left:' + offsetLeft + 'px">' +
 					'</div>';
 			},
 			shuffleButton: function () {
@@ -164,8 +164,8 @@ var PUZZLE = (function ($, window, undefined) {
 			var board = this,
 				touch = {}; // Object for holding variables during a touch events cycle
 			board.el
-				.delegate('.tile', 'touchstart', function (e) {
-					if (!animating && e.touches.length === 1) {
+				.delegate('.tile', 'touchstart mousedown', function (e) {
+					if (!animating && (!e.touches || e.touches.length === 1)) {
 						touch.tile = board.tiles[$(this).data('position')];
 						touch.direction = touch.tile.getMovableDirection();
 						if (touch.direction !== -1) {
@@ -173,7 +173,7 @@ var PUZZLE = (function ($, window, undefined) {
 							touch.axis = touch.direction % 2 === 0; // true:y, false:x
 							
 							// Record original position
-							touch.op = touch.axis ? e.touches[0].pageY : e.touches[0].pageX;
+							touch.op = touch.axis ? (e.pageY || e.touches[0].pageY) : (e.pageX || e.touches[0].pageX);
 							
 							// Determine bounds and trigger point
 							switch (touch.direction) {
@@ -202,8 +202,8 @@ var PUZZLE = (function ($, window, undefined) {
 						}
 					}
 				})
-				.delegate('.tile', 'touchmove', function (e) {
-					if (e.touches.length === 1 && touch.legit) {
+				.delegate('.tile', 'touchmove mousemove', function (e) {
+					if ((!e.touches || e.touches.length === 1) && touch.legit) {
 						var i, j, dx, dy;
 						if (!touch.dragging) {
 							touch.dragging = true;
@@ -213,7 +213,7 @@ var PUZZLE = (function ($, window, undefined) {
 						}
 						
 						// Record displacement and limit it to the bounds
-						var d = (touch.axis ? e.touches[0].pageY : e.touches[0].pageX) - touch.op;
+						var d = (touch.axis ? (e.pageY || e.touches[0].pageY) : (e.pageX || e.touches[0].pageX)) - touch.op;
 						touch.dp = Math.max(Math.min(d, touch.upperBound), touch.lowerBound);
 						
 						// Drag animation
@@ -224,7 +224,7 @@ var PUZZLE = (function ($, window, undefined) {
 						}
 					}
 				})
-				.delegate('.tile', 'touchend', function (e) {
+				.delegate('.tile', 'touchend mouseup', function (e) {
 					var i, j;
 					if (touch.legit) {
 						if (touch.dragging && Math.abs(touch.dp) < Math.abs(touch.triggerPoint)) {
