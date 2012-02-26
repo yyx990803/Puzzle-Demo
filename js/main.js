@@ -61,9 +61,8 @@ var PUZZLE = (function ($, window, undefined) {
 		update: function (position) {
 			this.position = position;
 			this.x = (position % 4) * tileSize;
-			this.y  = Math.floor(position / 4) * tileSize;
-			var el = this.el;
-			el.data('position', position).css(cssTransform(this.x, this.y));
+			this.y = Math.floor(position / 4) * tileSize;
+			this.el.data('position', position).css(cssTransform(this.x, this.y));
 		},
 		
 		// Determine the legit move direction
@@ -82,8 +81,9 @@ var PUZZLE = (function ($, window, undefined) {
 		},
 		
 		// Get neighbor with given direction
+		// returns a tile object if there is a nieghbor
 		// returns null if the cell in that direction is empty
-		// if out of bound, implicitly returning undefined.
+		// implicitly returns undefined if out of bound
 		getNeighbor: function (direction) {
 			var n;
 			switch(direction) {
@@ -230,7 +230,7 @@ var PUZZLE = (function ($, window, undefined) {
 									.removeClass('drag')
 									.css(cssTransform(touch.group[i].x, touch.group[i].y));
 							}
-							board.lock(animationSpeed);
+							board.lock();
 						} else {
 							// Triggered a successful move
 							// move the tile objects to new positions in array
