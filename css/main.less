@@ -1,12 +1,10 @@
 //Variables
-
 @tileSize: 70px;
 @tileBorder: 1px;
 @boardSize: (@tileSize + @tileBorder * 2) * 4;
 @boardPadding: 2px;
 
 //Mixins
-
 .transition(@args) {
 	-webkit-transition: all @args;
 	-moz-transition: all @args;
@@ -39,6 +37,7 @@ html, body {
 #board {
 	width: @boardSize;
 	height: @boardSize;
+	position: relative;
 	margin: 9px auto;
 	background-color: #ccc;
 	border-radius: 2px;

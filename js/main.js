@@ -20,7 +20,7 @@ var PUZZLE = (function ($, window, undefined) {
 				return '<div id="board"></div>';
 			},
 			tile: function (id) {
-				var offsetTop  = Math.floor(id / 4) * -tileSize,
+				var offsetTop  = ~~(id / 4) * -tileSize,
 					offsetLeft = id % 4 * -tileSize;
 				return '<div class="tile">' +
 					'<img src="img/globe.jpg" draggable="false" style="top:' + offsetTop + 'px; left:' + offsetLeft + 'px">' +
@@ -61,14 +61,14 @@ var PUZZLE = (function ($, window, undefined) {
 		update: function (position) {
 			this.position = position;
 			this.x = (position % 4) * tileSize;
-			this.y = Math.floor(position / 4) * tileSize;
+			this.y = ~~(position / 4) * tileSize;
 			this.el.data('position', position).css(cssTransform(this.x, this.y));
 		},
 		
 		// Determine the legit move direction
 		// 0-top, 1-right, 2-bottom, 3-left, -1 if cannot move
 		getMovableDirection: function () {
-			var row  = Math.floor(this.position / 4),
+			var row  = ~~(this.position / 4),
 				col  = this.position % 4,
 				slot = this.board.openSlot;
 			if (row === slot.row) {
@@ -118,13 +118,12 @@ var PUZZLE = (function ($, window, undefined) {
 	
 	Board.prototype = {
 		
-		// Array holding the tile objects
-		// The index here determines the actual position on the board
-		// The empty slot is null
-		tiles: [],
-		
 		// Populate the tiles
 		buildTiles: function () {
+			// Array holding the tile objects
+			// The index here determines the actual position on the board
+			// The empty slot is null
+			this.tiles = [];
 			for (var i = 0; i < 15; i++) {
 				this.tiles.push(new Tile(i, this));
 			}
@@ -136,7 +135,7 @@ var PUZZLE = (function ($, window, undefined) {
 		shuffle: function () {
 			var i, j, temp;
 			for (i = this.tiles.length - 1; i > 0; i--) {
-				j = Math.floor(Math.random() * (i + 1));
+				j = ~~(Math.random() * (i + 1));
 				temp = this.tiles[i];
 				this.tiles[i] = this.tiles[j];
 				this.tiles[j] = temp;
@@ -276,7 +275,7 @@ var PUZZLE = (function ($, window, undefined) {
 		setOpenSlot: function (i) {
 			this.openSlot = {
 				position: i,
-				row: Math.floor(i / 4),
+				row: ~~(i / 4),
 				col: i % 4
 			};
 		},
